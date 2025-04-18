@@ -30,7 +30,7 @@ public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
             nativeQuery = true)
     Double calcularMediaDuracaoProjetosEncerrados();
 
-    @Query("SELECT COUNT(DISTINCT pm.membro) FROM Projeto p JOIN p.membros pm")
+    @Query("SELECT COUNT(DISTINCT m.id) FROM Projeto p JOIN p.membros m")
     Long countMembrosUnicosAlocados();
 
     @Query("SELECT COUNT(p) FROM Projeto p JOIN p.membros m WHERE m.id = :membroId AND p.status NOT IN ('ENCERRADO', 'CANCELADO')")

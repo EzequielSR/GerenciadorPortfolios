@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,12 +32,12 @@ public class DataInitializer {
             if (membroRepository.count() == 0 && projetoRepository.count() == 0) {
                 criarDadosIniciais();
 
-                // Testa a consulta após criar dados
-                Double media = projetoRepository.calcularMediaDuracaoProjetosEncerrados();
-                System.out.println("Média de duração: " + (media != null ? media : "Nenhum projeto encerrado"));
+                // Teste de consulta
+                testarConsultas();
             }
         } catch (Exception e) {
             System.err.println("Erro ao inicializar dados: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -73,20 +74,33 @@ public class DataInitializer {
                 .descricao("Desenvolvimento do sistema de gestão interno")
                 .status(StatusProjeto.EM_ANALISE)
                 .gerente(gerente)
-                .membros(Set.of(funcionario1, funcionario2))
+                .membros(new HashSet<>(Set.of(funcionario1, funcionario2)))
                 .build();
 
         Projeto projeto2 = Projeto.builder()
                 .nome("Portal do Cliente")
                 .dataInicio(LocalDate.now().minusDays(15))
                 .previsaoTermino(LocalDate.now().plusMonths(2))
+                .dataRealTermino(LocalDate.now().plusMonths(1)) // Adicionado para teste de média
                 .orcamentoTotal(new BigDecimal("80000.00"))
                 .descricao("Desenvolvimento do portal para clientes")
-                .status(StatusProjeto.EM_ANDAMENTO)
+                .status(StatusProjeto.ENCERRADO) // Alterado para testar a consulta
                 .gerente(gerente)
-                .membros(Set.of(funcionario1))
+                .membros(new HashSet<>(Set.of(funcionario1)))
                 .build();
 
         projetoRepository.saveAll(List.of(projeto1, projeto2));
+    }
+
+    private void testarConsultas() {
+        System.out.println("Testando consultas...");
+
+        // Testa consulta de média
+        Double media = projetoRepository.calcularMediaDuracaoProjetosEncerrados();
+        System.out.println("Média de duração (dias): " + media);
+
+        // Testa outras consultas
+        System.out.println("Projetos por status: " + projetoRepository.countProjetosByStatus());
+        System.out.println("Total orçado por status: " + projetoRepository.sumOrcamentoByStatus());
     }
 }
