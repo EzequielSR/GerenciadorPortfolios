@@ -2,6 +2,35 @@
 
 Sistema desenvolvido para gerenciar o portfólio de projetos de uma empresa, desde a fase de viabilidade até a conclusão. O sistema permite o acompanhamento do ciclo de vida dos projetos, gerenciamento de equipe, controle de orçamento, risco e geração de relatórios.
 
+---
+
+## 📚 Sumário
+
+
+- [🚀 Tecnologias Utilizadas](#-tecnologias-utilizadas)  
+ 
+
+- [📋 Regras de Negócio ](#-regras-de-negócio)  
+ 
+
+- [🧱 Arquitetura e Boas Práticas](#-arquitetura-e-boas-práticas)  
+ 
+
+- [🔐 Segurança](#-segurança)  
+
+- [🧪 Testes](#-testes)  
+ 
+- [🧾 Documentação da API](#-documentação-da-api)
+
+
+- [🛠 Como executar o projeto](#-como-executar-o-projeto)  
+
+ 
+
+- [📁 Estrutura do Projeto](#-estrutura-do-projeto)  
+ 
+
+---
 ## 🚀 Tecnologias Utilizadas
 
 - **Java 21**
