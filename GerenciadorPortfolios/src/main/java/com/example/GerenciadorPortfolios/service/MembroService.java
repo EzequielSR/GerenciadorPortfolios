@@ -40,7 +40,6 @@ public class MembroService {
 
     private MembroDTO criarMembroExterno(MembroDTO membroDTO) {
         // Simula a chamada para API externa
-        // Em produção, seria: restTemplate.postForObject(API_MEMBROS_URL, membroDTO, MembroDTO.class);
 
         // Mock da resposta
         return MembroDTO.builder()
@@ -52,7 +51,6 @@ public class MembroService {
 
     public MembroDTO consultarMembroExterno(String identificadorExterno) {
         // Simula a consulta na API externa
-        // Em produção, seria: restTemplate.getForObject(API_MEMBROS_URL + "/" + identificadorExterno, MembroDTO.class);
 
         // Mock da resposta
         return MembroDTO.builder()

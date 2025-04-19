@@ -12,23 +12,23 @@ import java.util.Set;
 @Repository
 public interface MembroRepository extends JpaRepository<Membro, Long> {
 
-    List<Membro> findByAtribuicao(String atribuicao); // Alterado de 'role' para 'atribuicao'
+    List<Membro> findByAtribuicao(String atribuicao);
 
     // Método para buscar vários membros de uma vez
     List<Membro> findAllByIdIn(Set<Long> ids);
 
     // Métodos para relatórios e validações
-    @Query("SELECT COUNT(DISTINCT m) FROM Membro m JOIN m.projetos p") // Corrigido para usar 'Membro' e 'projetos'
+    @Query("SELECT COUNT(DISTINCT m) FROM Membro m JOIN m.projetos p")
     long countUniqueMembersInProjects();
 
-    @Query("SELECT COUNT(DISTINCT m) FROM Projeto p JOIN p.membros m WHERE p.id IN :projectIds") // Corrigido para usar 'membros'
+    @Query("SELECT COUNT(DISTINCT m) FROM Projeto p JOIN p.membros m WHERE p.id IN :projectIds")
     long countUniqueMembersInSpecificProjects(@Param("projectIds") List<Long> projectIds);
 
     // Método para verificar se membros existem
-    @Query("SELECT COUNT(m) FROM Membro m WHERE m.id IN :memberIds") // Corrigido para usar 'Membro'
+    @Query("SELECT COUNT(m) FROM Membro m WHERE m.id IN :memberIds")
     long countByIds(@Param("memberIds") Set<Long> memberIds);
 
     // Método para buscar membros por projeto
-    @Query("SELECT m FROM Membro m JOIN m.projetos p WHERE p.id = :projectId") // Corrigido para usar 'projetos'
+    @Query("SELECT m FROM Membro m JOIN m.projetos p WHERE p.id = :projectId")
     List<Membro> findByProjectId(@Param("projectId") Long projectId);
 }
