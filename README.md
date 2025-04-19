@@ -1,147 +1,183 @@
-# 💼 Gerenciador de Portfólios de Projetos
+# 💼 Gerenciador de Portfólios
 
-Sistema completo de gerenciamento de portfólio de projetos, desenvolvido como parte de um desafio técnico em Java. Permite acompanhar o ciclo de vida de projetos, desde a análise de viabilidade até a finalização, com controle de orçamento, equipe e risco.
+Sistema desenvolvido para gerenciar o portfólio de projetos de uma empresa, desde a fase de viabilidade até a conclusão. O sistema permite o acompanhamento do ciclo de vida dos projetos, gerenciamento de equipe, controle de orçamento, risco e geração de relatórios.
 
 ---
 
 ## 📚 Sumário
 
+
 - [🚀 Tecnologias Utilizadas](#-tecnologias-utilizadas)  
-- [🎯 Objetivo do Projeto](#-objetivo-do-projeto)  
-- [📦 Funcionalidades](#-funcionalidades)  
-- [📐 Arquitetura](#-arquitetura)  
+ 
+
+- [📋 Regras de Negócio ](#-regras-de-negócio)  
+ 
+
+- [🧱 Arquitetura e Boas Práticas](#-arquitetura-e-boas-práticas)  
+ 
+
 - [🔐 Segurança](#-segurança)  
-- [📄 Documentação da API](#-documentação-da-api)  
+
 - [🧪 Testes](#-testes)  
-- [📁 Como Rodar Localmente](#-como-rodar-localmente)  
-- [🛠️ Melhorias Futuras](#️-melhorias-futuras)
+ 
+- [🧾 Documentação da API](#-documentação-da-api)
+
+
+- [🛠 Como executar o projeto](#-como-executar-o-projeto)  
+
+ 
+
+- [📁 Estrutura do Projeto](#-estrutura-do-projeto)  
+ 
 
 ---
-
 ## 🚀 Tecnologias Utilizadas
 
-- Java 17  
-- Spring Boot  
-- Spring Data JPA  
-- Hibernate  
-- PostgreSQL  
-- Spring Security  
-- Swagger / OpenAPI  
-- Lombok  
-- JUnit 5  
-- Mockito
+- **Java 21**
+- **Spring Boot**
+- **Spring Data JPA**
+- **Spring Security**
+- **Hibernate**
+- **PostgreSQL**
+- **Swagger / OpenAPI**
+- **JUnit 5**
+- **Mockito**
+- **Lombok**
+- **ModelMapper**
 
 ---
 
-## 🎯 Objetivo do Projeto
+## 📋 Regras de Negócio
 
-Construir uma API RESTful que permita:
+### Projetos
 
-- O cadastro, atualização, exclusão e consulta de projetos;
-- Gerenciamento de status, orçamento, risco e equipe;
-- Geração de relatório gerencial do portfólio de projetos;
-- Integração com API externa para cadastro de membros;
-- Aplicação das melhores práticas de desenvolvimento com arquitetura limpa, testes e segurança.
+- CRUD completo de projetos com os seguintes campos:
+  - Nome
+  - Data de início
+  - Previsão de término
+  - Data real de término
+  - Orçamento total
+  - Descrição
+  - Gerente responsável (relacionado à entidade **Membro**)
+  - Status atual
+
+### Classificação de Risco (calculada automaticamente)
+
+| Risco       | Orçamento                            | Prazo                |
+|-------------|--------------------------------------|----------------------|
+| **Baixo**   | Até R$ 100.000                       | ≤ 3 meses            |
+| **Médio**   | R$ 100.001 - R$ 500.000              | 3 a 6 meses          |
+| **Alto**    | Acima de R$ 500.000                  | Superior a 6 meses   |
+
+### Status do Projeto (ordem obrigatória)
+
+> **em_análise → análise_realizada → análise_aprovada → iniciado → planejado → em_andamento → encerrado**
+
+- **cancelado** pode ser aplicado a qualquer momento
+- A transição de status respeita a sequência lógica (sem pular etapas)
+- Projetos com status **iniciado**, **em andamento** ou **encerrado** **não podem ser excluídos**
+
+### Membros
+
+- Cadastro via API REST externa (mockada), enviando **nome** e **atribuição (cargo)**
+- Apenas membros com atribuição `"funcionário"` podem ser associados a projetos
+- Um projeto pode conter de **1 a 10 membros**
+- Um membro pode participar de no máximo **3 projetos ativos** (com status diferente de encerrado ou cancelado)
+
+### Relatório Resumido (endpoint exclusivo)
+
+- Quantidade de projetos por status
+- Total orçado por status
+- Média de duração dos projetos encerrados
+- Total de membros únicos alocados
 
 ---
 
-## 📦 Funcionalidades
+## 🧱 Arquitetura e Boas Práticas
 
-- ✅ CRUD completo de Projetos
-- ✅ Cálculo automático de **nível de risco** com base em orçamento e duração
-- ✅ **Controle de status** com fluxo lógico fixo:
-  - em análise → análise realizada → análise aprovada → iniciado → planejado → em andamento → encerrado
-  - Cancelado pode ser aplicado a qualquer momento
-- ✅ Restrições de exclusão conforme status atual do projeto
-- ✅ Integração com API mockada para **cadastro e consulta de membros**
-- ✅ Regras de alocação de membros:
-  - Apenas membros com **atribuição “funcionário”** podem ser alocados
-  - Cada projeto aceita de **1 a 10 membros**
-  - Um membro pode estar em no máximo **3 projetos ativos**
-- ✅ Geração de **relatório gerencial**:
-  - Quantidade de projetos por status
-  - Total orçado por status
-  - Média de duração dos projetos encerrados
-  - Total de membros únicos alocados
-- ✅ Filtros e paginação na listagem de projetos
-
----
-
-## 📐 Arquitetura
-
-O projeto segue o padrão **MVC (Model - View - Controller)** com separação clara de responsabilidades:
- ```bash
-  com.ezequiel.gerenciadorportfolios
-├── config               # Configurações de segurança e CORS
-├── controller           # Camada de entrada (API REST)
-├── dto                 # Objetos de transferência de dados
-├── exception            # Tratamento global de erros
-├── model                # Entidades JPA
-├── repository           # Interface com o banco de dados
-├── service              # Lógica de negócio
-├── util                 # Utilitários e helpers
-
- ```
-
-- Utilização de **DTOs** e mapeamento entre entidades com **ModelMapper**
-- Camadas desacopladas e aplicação dos princípios **SOLID** e **Clean Code**
+- Arquitetura **MVC**
+- Separação clara entre as camadas:
+  - **Controller**
+  - **Service**
+  - **Repository**
+- Uso de **DTOs** e **ModelMapper** para mapeamento entre entidades e objetos de transporte
+- Princípios de **Clean Code** e **SOLID**
+- Tratamento global de exceções com `@ControllerAdvice`
+- Implementação de **paginação e filtros** para listagem de projetos
+- Segurança básica com **Spring Security** (usuário/senha em memória)
+- Testes unitários cobrindo pelo menos **70% das regras de negócio**
 
 ---
 
 ## 🔐 Segurança
 
-- Implementação de autenticação **básica** com **Spring Security**
-- Usuário/senha configurados em memória:
-  - **Usuário:** `admin`
-  - **Senha:** `admin123`
-
----
-
-## 📄 Documentação da API
-
-A documentação interativa está disponível via Swagger:
-
-🔗 `http://localhost:8080/swagger-ui.html`  
-🔗 ou via OpenAPI: `http://localhost:8080/v3/api-docs`
+- Login básico com Spring Security
+- Credenciais estão armazenadas em memória
+- Proteção de endpoints sensíveis
 
 ---
 
 ## 🧪 Testes
 
-- Testes unitários com **JUnit 5** e **Mockito**
-- Foco nas regras de negócio com cobertura superior a 70%
-- Camada de serviço amplamente testada
+- Framework de testes: **JUnit 5 + Mockito**
+- Testes com foco em regras de negócio e cobertura mínima de 70%
+- Mocks para dependências externas e base de dados
 
 ---
 
-## 📁 Como Rodar Localmente
+## 🧾 Documentação da API
+
+- Disponível via **Swagger/OpenAPI**
+- Acesse em: `http://localhost:8080/swagger-ui.html`
+
+---
+
+## 🛠 Como executar o projeto
 
 ### Pré-requisitos
 
-- Java 17+
+- Java 21
 - Maven
 - PostgreSQL
 
 ### Passos
 
 1. Clone o repositório:
-```bash
-git clone https://github.com/EzequielSR/GerenciadorPortfolios.git
-cd GerenciadorPortfolios
-```
+   ```bash
+   git clone https://github.com/EzequielSR/GerenciadorPortfolios.git
+   ```
+2. Crie o banco de dados PostgreSQL:
+   ```sql
+   CREATE DATABASE gerenciador_portfolios;
+   ```
+3. Configure o arquivo **applicattion.properties** com as credenciais do seu banco de dados.
+4. Rode o projeto:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+6. Acesse o swagger para vizualidar a API (http://localhost:8080/swagger-ui.html)
 
-2. Configure o banco de dados: Crie um banco PostgreSQL com as credenciais:
-```bash
-spring.datasource.url=jdbc:postgresql://localhost:5432/gerenciador_portfolios
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
-```
+---
 
-3. Rode o projeto:
+## 📂 Estrutura do Projeto
 ```bash
-./mvnw spring-boot:run
+src
+├── main
+│   ├── java
+│   │   └── com.example.GerenciadorPortfolios
+│   │       ├── config
+│   │       ├── controller
+│   │       ├── dto
+│   │       ├── exception
+|   |       ├── mapper
+│   │       ├── model
+│   │       ├── repository
+│   │       ├── service
+│   │       └── GerenciadorPortfoliosApplication.java
+│   └── resources
+│       ├── application.properties
+│       └── ...
+├── test
+│   └── ...
+|        └── ProjetoServiceTest.java
 ```
-
-4. Acesse a API:
-* Swagger:  http://localhost:8080/swagger-ui.html
-* Endpoints: http://localhost:8080/api/projetos
